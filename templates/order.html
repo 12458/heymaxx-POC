@@ -11,7 +11,7 @@
     {% for product in order_items %}
       <tr>
         <td>{{ product.name }}</td>
-        <td>{{ product.price }}</td>
+        <td>{{ product.price | sgd}}</td>
         <td>{{ product.qty }} </td>
       </tr>
     {% endfor %}

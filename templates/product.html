@@ -3,10 +3,10 @@
 {% block title %}Product{% endblock %}
 
 {% block content %}
-<h1>{{product.name}}</h1>
-<p>{{product.description}}</p>
-<p>{{product.price}}</p>
-<a href="{{ url_for('add_to_cart', item_id=product.item_id)}}"> Add to cart </a>
+<h1>Name: {{product.name}}</h1>
+<p>Description: {{product.description}}</p>
+<p>Price: {{product.price | sgd}}</p>
+<a href="{{ url_for('add_to_cart', item_id=product.item_id)}}"> <button>Add to cart</button>  </a>
 <h1>
     Reviews
 </h1>

@@ -14,6 +14,13 @@ app = Flask(__name__)
 app.secret_key = secrets.token_hex() # Generate a random secret key
 auth = HTTPBasicAuth()
 
+def sgd(value):
+    """Format value as SGD."""
+    return f"${value:,.2f}"
+
+# Custom Jinja filter
+app.jinja_env.filters["sgd"] = sgd
+
 users = {
     "admin": generate_password_hash("admin")
 }
@@ -68,7 +75,7 @@ def review():
 
 @app.route('/review/<int:item_id>', methods=['GET', 'POST'])
 def review_item(item_id):
-    if request.method == 'POST':
+    if request.method == 'POST' and 'username' in session:
         # Get form data
         rating = int(request.form['rating'])
         review = request.form['review']

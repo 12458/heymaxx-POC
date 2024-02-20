@@ -27,7 +27,7 @@
             {{ product.description }}
         </td>
         <td>
-            {{ product.price }}
+            {{ product.price | sgd}}
         </td>
         <td>
             <a href="{{ url_for('add_to_cart', item_id=product.item_id)}}"> Add to cart </a>

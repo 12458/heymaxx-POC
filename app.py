@@ -2,7 +2,7 @@
 E-commerce CRUD app
 """
 
-from flask import Flask, render_template, request, redirect, url_for, session
+from flask import Flask, render_template, request, redirect, url_for, session, flash
 from flask_httpauth import HTTPBasicAuth
 from werkzeug.security import generate_password_hash, check_password_hash
 import sqlite3
@@ -72,6 +72,9 @@ def review_item(item_id):
         # Get form data
         rating = int(request.form['rating'])
         review = request.form['review']
+        if not (1 <= rating <= 5):
+            flash('Rating must be between 1 and 5', 'error')
+            return redirect(url_for('review_item', item_id=item_id))
         # Add review to database
         with sqlite3.connect('db.db') as conn:
             cursor = conn.cursor()
@@ -271,7 +274,9 @@ def register():
         email = request.form['email']
         password = request.form['password']
         confirm = request.form['confirm']
-        assert password == confirm, 'Passwords do not match'
+        if password != confirm:
+            flash('Passwords do not match', 'error')
+            return redirect(url_for('register'))
         # Add user to database
         with sqlite3.connect('db.db') as conn:
             cursor = conn.cursor()

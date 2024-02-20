@@ -5,6 +5,7 @@
 
 ```sh
 . .venv/bin/activate # Activate venv
+pip3 install -r requirements.txt
 python3 app.py # Run flask app
 ```
 

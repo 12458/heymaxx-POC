@@ -13,6 +13,12 @@ python3 app.py # Run flask app
 
 Credentials for admin page is `admin` and `admin` for username and password respectively. 
 
+Contact me for the Stripe test key.
+
+```
+export STRIPE_TEST_KEY=<YOUR_KEY_HERE>
+```
+
 ## Database Schema
 
 ```sql

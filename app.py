@@ -9,10 +9,15 @@ import sqlite3
 import secrets
 import uuid
 import datetime
+import stripe
+import os
 
 app = Flask(__name__)
 app.secret_key = secrets.token_hex() # Generate a random secret key
 auth = HTTPBasicAuth()
+
+stripe.api_key = os.environ['STRIPE_SECRET_KEY']
+YOUR_DOMAIN = 'http://localhost:5000'
 
 def sgd(value):
     """Format value as SGD."""
@@ -175,6 +180,7 @@ def checkout():
         phone = request.form['phone']
         # Add order to database
         with sqlite3.connect('db.db') as conn:
+            conn.row_factory = sqlite3.Row
             # Generate Unique Order ID
             ORDER_ID = uuid.uuid4().hex
             cursor = conn.cursor()
@@ -184,23 +190,63 @@ def checkout():
             cart = cursor.fetchall()
             for item in cart:
                 cursor.execute('INSERT INTO Order_Items (order_id, item_id, qty) VALUES (?, ?, ?)', (ORDER_ID, item[0], item[1]))
+            
+            cursor.execute('SELECT i.item_id, i.name, i.price, c.qty FROM Cart c INNER JOIN Items i ON c.item_id = i.item_id WHERE user_id = ?', (session['username'],))
+            cart_detailed = cursor.fetchall()
+            total = sum([item['price'] * item['qty'] for item in cart_detailed])
+
             # Clear cart
             cursor.execute('DELETE FROM Cart WHERE user_id = ?', (session['username'],))
             conn.commit()
-        return redirect(url_for('index'))
+        
+        try:
+            print(total)
+            checkout_session = stripe.checkout.Session.create(
+            line_items=[
+                {
+                    # Provide the exact Price ID (for example, pr_1234) of the product you want to sell
+                    'price_data': {
+                        'currency': 'sgd',
+                        'product': 'prod_Pb3YILaur4mxxM',
+                        'unit_amount': int(total * 100)
+
+                    },
+                    'quantity': 1,
+                },
+            ],
+            mode='payment',
+            success_url=YOUR_DOMAIN + '/success',
+            cancel_url=YOUR_DOMAIN + '/cancel',
+        )
+        except Exception as e:
+            return str(e)
+
+        return redirect(checkout_session.url, code=303)
+        
+        # redirect(url_for('index'))
     else:
         # Get cart items details from database
         if 'username' in session:
             with sqlite3.connect('db.db') as conn:
-                cart = session.get('cart', {})
                 conn.row_factory = sqlite3.Row
                 cursor = conn.cursor()
                 cursor.execute('SELECT i.item_id, i.name, i.price, c.qty FROM Cart c INNER JOIN Items i ON c.item_id = i.item_id WHERE user_id = ?', (session['username'],))
                 cart_detailed = cursor.fetchall()
                 total = sum([item['price'] * item['qty'] for item in cart_detailed])
+            if total == 0:
+                flash('Your cart is empty', 'error')
+                return redirect(url_for('view_cart'))
             return render_template('checkout.html', cart=cart_detailed, total=total)
         else:
             return redirect(url_for('login'))
+
+@app.route('/success')
+def success():
+    return render_template('success.html')
+
+@app.route('/cancel')
+def cancel():
+    return render_template('cancel.html')
 
 @app.route('/search', methods=['GET'])
 def search():

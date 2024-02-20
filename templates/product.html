@@ -1,0 +1,33 @@
+{% extends "base.html" %}
+
+{% block title %}Product{% endblock %}
+
+{% block content %}
+<h1>{{product.name}}</h1>
+<p>{{product.description}}</p>
+<p>{{product.price}}</p>
+<a href="{{ url_for('add_to_cart', item_id=product.item_id)}}"> Add to cart </a>
+<h1>
+    Reviews
+</h1>
+<table>
+    <tr>
+        <th>
+            Rating
+        </th>
+        <th>
+            Review
+        </th>
+    </tr>
+    {% for review in reviews %}
+    <tr>
+        <td>
+            {{ '⭐' * review.rating }}
+        </td>
+        <td>
+            {{ review.review }}
+        </td>
+    </tr>
+    {% endfor %}
+</table>
+{% endblock %}

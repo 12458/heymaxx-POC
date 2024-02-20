@@ -1,0 +1,13 @@
+{% extends "base.html" %}
+
+{% block title %}Home{% endblock %}
+
+{% block content %}
+<h1>Welcome!</h1>
+{% if username %}
+<p>You are logged in as: {{username}}</p>
+<a href="{{url_for('view_orders')}}"><button>View Orders</button></a>
+<a href="{{url_for('review')}}"><button>Review Past Orders </button></a>
+{% endif %}
+<p>Welcome to our store. Please visit our <a href="{{url_for('products')}}">catalog</a>.</p>
+{% endblock %}

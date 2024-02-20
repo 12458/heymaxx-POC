@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <!-- Minified version -->
+    <link rel="stylesheet" href="https://cdn.simplecss.org/simple.min.css">
+    <title>{% block title %}{% endblock %}</title>
+</head>
+
+<body>
+    <header>
+        <nav>
+            <a href="{{ url_for('index') }}">Home</a>
+            <a href="{{ url_for('products') }}">Catalog</a>
+            <form action="{{url_for('search')}}" method="GET">
+                <div>
+                    <input type="text" name="query" class="input" placeholder="Search" required>
+                    <input type="submit" value="Search">
+                </div>
+            </form>
+            <a href="{{ url_for('view_cart') }}">View Cart</a>
+            {% if not 'username' in session %}
+            <a href="{{ url_for('login') }}">Login</a>
+            <a href="{{ url_for('register') }}">Register</a>
+            <a href="{{ url_for('admin') }}">Admin</a>
+            {% else %}
+            <a href="{{ url_for('logout') }}">Logout</a>
+            {% endif %}
+        </nav>
+    </header>
+    <div id="content">{% block content %}{% endblock %}</div>
+</body>
+
+</html>

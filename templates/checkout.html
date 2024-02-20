@@ -1,0 +1,39 @@
+{% extends "base.html" %}
+
+{% block title %}Checkout{% endblock %}
+
+{% block content %}
+<h1>Checkout</h1>
+<table>
+    <tr>
+        <th>ID</th>
+        <th>Name</th>
+        <th>Price</th>
+        <th>Qty</th>
+    </tr>
+    {% for product in cart %}
+      <tr>
+        <td>{{ product.item_id }}</td>
+        <td>{{ product.name }}</td>
+        <td>{{ product.price }}</td>
+        <td>{{ product.qty }} </td>
+      </tr>
+    {% endfor %}
+    <tr>
+        <td></td>
+        <td></td>
+        <td>Total</td>
+        <td>{{ total }}</td>
+    </tr>
+</table>
+  
+  <form method="POST" action="{{ url_for('checkout') }}">
+    <!-- user information, shipping address, and payment method -->
+    <input type="text" name="name" placeholder="Name" required>
+    <input type="text" name="address" placeholder="Address" required>
+    <input type="email" name="email" placeholder="Email" required>
+    <input type="tel" name="phone" placeholder="Phone" required>
+    
+    <input type="submit" value="Proceed with payment">
+    </form>
+{% endblock %}

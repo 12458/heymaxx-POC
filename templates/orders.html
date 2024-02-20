@@ -1,0 +1,23 @@
+{% extends "base.html" %}
+{% block title %}Orders{% endblock %}
+{% block content %}
+<h1>Orders</h1>
+{% if orders %}
+    <table>
+        <tr>
+            <th>Order ID</th>
+            <th>Order Date</th>
+            <th>Paid</th>
+        </tr>
+        {% for order in orders %}
+            <tr>
+                <td><a href="{{url_for('order', order_id=order.order_id)}}">{{ order.order_id }}</a></td>
+                <td>{{ order.order_date }}</td>
+                <td>{{ 'True' if order.payment_status else 'False' }}</td>
+            </tr>
+        {% endfor %}
+    </table>
+{% else %}
+    <p>No orders yet.</p>
+{% endif %}
+{% endblock %}

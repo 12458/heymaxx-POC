@@ -1,0 +1,23 @@
+{% extends "base.html" %}
+{% block title %}Review{% endblock %}
+{% block content %}
+<h1>Review Past Orders</h1>
+<table>
+    <tr>
+        <th>
+            Item Name
+        </th>
+        <th>
+            Review
+        </th>
+    </tr>
+    {% for item in items %}
+    <tr>
+        <td>
+            {{ item.name }}
+        </td>
+        <td> <a href="{{url_for('review_item', item_id=item.item_id)}}">Review</a> </td>
+    </tr>
+    {% endfor %}
+</table>
+{% endblock %}

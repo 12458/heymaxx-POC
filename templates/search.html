@@ -1,0 +1,38 @@
+{% extends "base.html" %}
+
+{% block title %}Search{% endblock %}
+
+{% block content %}
+<table>
+    <tr>
+        <th>
+            Name
+        </th>
+        <th>
+            Description
+        </th>
+        <th>
+            Price
+        </th>
+        <th>
+            Add to cart
+        </th>
+    </tr>
+    {% for product in products %}
+    <tr>
+        <td>
+            {{ product.name }}
+        </td>
+        <td>
+            {{ product.description }}
+        </td>
+        <td>
+            {{ product.price }}
+        </td>
+        <td>
+            <a href="{{ url_for('add_to_cart', item_id=product.item_id)}}"> Add to cart </a>
+        </td>
+    </tr>
+    {% endfor %}
+</table>
+{% endblock %}

@@ -1,0 +1,10 @@
+{% extends "base.html" %}
+{% block title %}Review{% endblock %}
+{% block content %}
+<h1>Review Item</h1>
+<form action="{{url_for('review_item', item_id=item_id)}}" method="POST">
+    <label>Rating:</label> <input type="number" name="rating" placeholder="Rating" required>
+    <label>Review:</label><textarea name="review" placeholder="Review" required> </textarea>
+    <input type="submit" value="Submit">
+</form>
+{% endblock %}

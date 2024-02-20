@@ -1,0 +1,28 @@
+{% extends "base.html" %}
+
+{% block title %}Cart{% endblock %}
+
+{% block content %}
+  <h1>Cart</h1>
+  <table>
+    <tr>
+        <th>ID</th>
+        <th>Name</th>
+        <th>Price</th>
+        <th>Qty</th>
+        <th>Remove from cart</th>
+    </tr>
+    {% for product in cart %}
+      <tr>
+        <td>{{ product.item_id }}</td>
+        <td>{{ product.name }}</td>
+        <td>{{ product.price }}</td>
+        <td>{{ product.qty }} </td>
+        <td> 
+            <a href="/remove_from_cart/{{ product.item_id }}"><button>Remove from cart</button></a>
+        </td>
+      </tr>
+    {% endfor %}
+  </table>
+  <a href="{{url_for('checkout')}}"><button>Checkout</button></a>
+{% endblock %}

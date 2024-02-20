@@ -1,0 +1,29 @@
+{% extends "base.html" %}
+
+{% block title %}Catalog{% endblock %}
+
+{% block content %}
+  <h1>Catalog</h1>
+  <table>
+    <tr>
+        <th>ID</th>
+        <th>Name</th>
+        <th>Description</th>
+        <th>Price</th>
+        <th>Add to cart</th>
+    </tr>
+    {% for product in products %}
+      <tr>
+        <td>{{ product.item_id }}</td>
+        <td>{{ product.name }}</td>
+        <td>{{ product.description }}</td>
+        <td>{{ product.price }}</td>
+        <td> 
+            <a href="/add_to_cart/{{ product.item_id }}"><button>Add to cart</button></a>
+        </td>
+      </tr>
+    {% endfor %}
+  </table>
+
+    <a href="{{ url_for('view_cart') }}"><button>Go to cart</button></a>
+{% endblock %}

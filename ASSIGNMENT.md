@@ -4,11 +4,11 @@ Your boss storms into your room, eyes wide with a mix of panic and determination
 
 Here's the scenario: A local artisanal shop, known for its unique, handcrafted items, has been hit hard by recent events. To survive, they need to move their business online, fast. They've turned to your company for help. Your mission is to build an e-commerce platform that allows users to:
 
-- Item Catalog: Create a catalog of items that includes at least 10 different items, each with a unique name, description, and price.
-- Shopping Cart: Implement a shopping cart that allows users to add items from the item catalog. The shopping cart should keep track of the quantity of each item.
-- Add/Remove Items: Users should be able to add items to and remove items from the shopping cart.
-- Checkout Process: Implement a checkout process that includes user information, shipping address, and payment method (just mock the actual payment
-- Admin: Implement an admin system to manage the catalog, including adding/removing items, changing price etc..
+[x] Item Catalog: Create a catalog of items that includes at least 10 different items, each with a unique name, description, and price. \
+[x] Shopping Cart: Implement a shopping cart that allows users to add items from the item catalog. The shopping cart should keep track of the quantity of each item. \
+[x] Add/Remove Items: Users should be able to add items to and remove items from the shopping cart. \
+[x] Checkout Process: Implement a checkout process that includes user information, shipping address, and payment method (just mock the actual payment) \
+[x] Admin: Implement an admin system to manage the catalog, including adding/removing items, changing price etc..
 
 # Evaluation Criteria
 
@@ -22,9 +22,9 @@ Your submission will be evaluated on the following criteria:
 # Bonus
 
 For extra credit, consider adding the following features:
-- User Accounts: Allow users to create accounts and save their shopping carts between sessions.
-- Discounts: Implement a system for applying discounts to items or orders.
-- Inventory Management: Keep track of inventory for each item and prevent users from adding more of an item to their cart than is available in inventory.
-- Product Reviews: Allow users to leave reviews for products they've purchased
-- Product Search and Categories: Implement a search function and categorize products
-- Order History: Users should be able to view their past orders.
+[x] User Accounts: Allow users to create accounts and save their shopping carts between sessions.
+[] Discounts: Implement a system for applying discounts to items or orders.
+[] Inventory Management: Keep track of inventory for each item and prevent users from adding more of an item to their cart than is available in inventory.
+[x] Product Reviews: Allow users to leave reviews for products they've purchased
+[x] Product Search and Categories: Implement a search function and categorize products
+[x] Order History: Users should be able to view their past orders.

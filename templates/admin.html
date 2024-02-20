@@ -1,0 +1,27 @@
+{% extends "base.html" %}
+{% block title %}Admin{% endblock %}
+{% block content %}
+<h1>Admin</h1>
+<h2>Current Products</h2>
+<table>
+    <tr>
+        <th>ID</th>
+        <th>Name</th>
+        <th>Description</th>
+        <th>Price</th>
+        <th>Modify</th>
+        <th>Remove</th>
+    </tr>
+    {% for product in products %}
+    <tr>
+        <td>{{ product.item_id }}</td>
+        <td>{{ product.name }}</td>
+        <td>{{ product.description }}</td>
+        <td>{{ product.price }}</td>
+        <td><a href="{{ url_for('edit_product', item_id=product.item_id) }}"><button>Edit</button></a></td>
+        <td><a href="{{ url_for('remove_product', item_id=product.item_id) }}"><button>Remove</button></a></td>
+    </tr>
+    {% endfor %}
+</table>
+<a href="{{ url_for('add_product') }}"><button>Add</button></a>
+{% endblock %}

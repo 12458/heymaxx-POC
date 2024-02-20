@@ -16,7 +16,11 @@ app = Flask(__name__)
 app.secret_key = secrets.token_hex() # Generate a random secret key
 auth = HTTPBasicAuth()
 
-stripe.api_key = os.environ['STRIPE_SECRET_KEY']
+try:
+    stripe.api_key = os.environ['STRIPE_SECRET_KEY']
+except:
+    stripe.api_key = None
+
 YOUR_DOMAIN = 'http://localhost:5000'
 
 def sgd(value):
@@ -200,7 +204,8 @@ def checkout():
             conn.commit()
         
         try:
-            print(total)
+            if stripe.api_key is None:
+                raise Exception('Stripe API key not set')
             checkout_session = stripe.checkout.Session.create(
             line_items=[
                 {
@@ -217,11 +222,14 @@ def checkout():
             mode='payment',
             success_url=YOUR_DOMAIN + '/success',
             cancel_url=YOUR_DOMAIN + '/cancel',
-        )
-        except Exception as e:
-            return str(e)
+            )
+            return redirect(checkout_session.url, code=303)
 
-        return redirect(checkout_session.url, code=303)
+        except Exception as e:
+            # Silently ignore the error
+            print(e)
+            return redirect(url_for('index'))
+
         
         # redirect(url_for('index'))
     else:

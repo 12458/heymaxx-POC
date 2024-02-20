@@ -9,5 +9,9 @@ pip3 install -r requirements.txt
 python3 app.py # Run flask app
 ```
 
+# Things to note
+
+Credentials for admin page is `admin` and `admin` for username and password respectively. 
+
 # License
 All code in this repository is licensed under [AGPL-3.0](https://github.com/12458/heymaxx-POC/blob/master/LICENSE)

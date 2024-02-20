@@ -15,7 +15,7 @@
     {% for product in products %}
       <tr>
         <td>{{ product.item_id }}</td>
-        <td>{{ product.name }}</td>
+        <td><a href="{{url_for('product', id=product.item_id)}}">{{ product.name }}</a></td>
         <td>{{ product.description }}</td>
         <td>{{ product.price | sgd}}</td>
         <td> 

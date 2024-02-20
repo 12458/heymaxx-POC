@@ -17,7 +17,7 @@
         <td>{{ product.item_id }}</td>
         <td>{{ product.name }}</td>
         <td>{{ product.description }}</td>
-        <td>{{ product.price }}</td>
+        <td>{{ product.price | sgd}}</td>
         <td> 
             <a href="/add_to_cart/{{ product.item_id }}"><button>Add to cart</button></a>
         </td>

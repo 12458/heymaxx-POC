@@ -67,7 +67,7 @@ def review():
         with sqlite3.connect('db.db') as conn:
             conn.row_factory = sqlite3.Row
             cursor = conn.cursor()
-            cursor.execute('SELECT i.name, i.item_id FROM Order_Items oi INNER JOIN Items i ON oi.item_id = i.item_id INNER JOIN Orders o ON o.order_id = oi.order_id WHERE o.user_id = ?', (session['username'],))
+            cursor.execute('SELECT DISTINCT i.name, i.item_id FROM Order_Items oi INNER JOIN Items i ON oi.item_id = i.item_id INNER JOIN Orders o ON o.order_id = oi.order_id WHERE o.user_id = ?', (session['username'],))
             items = cursor.fetchall()
         return render_template('review.html', items=items)
     else:

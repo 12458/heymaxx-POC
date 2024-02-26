@@ -105,6 +105,8 @@ paths:
   /logout:
     post:
       summary: Log out a user
+      security:
+        - JWTAuth: []
       responses:
         "200":
           description: Logged out successfully

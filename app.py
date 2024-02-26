@@ -12,8 +12,22 @@ import uuid
 import datetime
 import stripe
 import os
+from flask_swagger_ui import get_swaggerui_blueprint
+
+SWAGGER_URL = '/docs'
+API_URL = '/static/openapi.json'
+
+swaggerui_blueprint = get_swaggerui_blueprint(
+    SWAGGER_URL,
+    API_URL,
+    config={
+        'app_name': "E-Commerce API"
+    }
+)
 
 app = Flask(__name__)
+app.register_blueprint(swaggerui_blueprint, url_prefix=SWAGGER_URL)
+
 app.config["JWT_SECRET_KEY"] = secrets.token_hex(32)  # Generate a strong secret key
 jwt = JWTManager(app)
 
@@ -152,7 +166,7 @@ def products():
     cursor.execute('SELECT * FROM Items')
     products_fetch = cursor.fetchall()
     close_db_connection(conn)
-    return jsonify({'products': [product for product in products_fetch]})
+    return jsonify({'products': products_fetch})
 
 @app.route('/product/<int:item_id>', methods=['GET'])
 def product(item_id):
@@ -164,7 +178,7 @@ def product(item_id):
         cursor.execute('SELECT * FROM Reviews WHERE item_id = ?', (item_id,))
         reviews = cursor.fetchall()
         close_db_connection(conn)
-        return jsonify({'product': [product_ for product_ in product_fetch], 'reviews': [review for review in reviews]})
+        return jsonify({'product': product_fetch, 'reviews': reviews})
     else:
         close_db_connection(conn)
         return jsonify({'error': f"Product with ID {item_id} not found"}), 404
@@ -205,7 +219,7 @@ def view_cart():
         cart_items = cursor.fetchall()
         close_db_connection(conn)
 
-        return jsonify({'cart': [item for item in cart_items]})
+        return jsonify({'cart': cart_items})
     except sqlite3.Error as e:
         close_db_connection(conn)
         return jsonify({'error': f'Failed to retrieve cart: {e}'}), 500
@@ -229,22 +243,22 @@ def remove_from_cart(item_id):
 @app.route('/checkout', methods=['POST'])
 @jwt_required()
 def checkout():
+    # Get user ID from JWT
+    user_id = get_jwt_identity()
+
+    # Get order details from JSON request
+    name = request.json.get('name')
+    email = request.json.get('email')
+    address = request.json.get('address')
+    phone = request.json.get('phone')
+
+    # Validate data
+    if not all([name, email, address, phone]):
+        return jsonify({'error': 'Missing required information'}), 400
+    # Connect to database
+    conn = get_db_connection()
+
     try:
-        # Get user ID from JWT
-        user_id = get_jwt_identity()
-
-        # Get order details from JSON request
-        name = request.json.get('name')
-        email = request.json.get('email')
-        address = request.json.get('address')
-        phone = request.json.get('phone')
-
-        # Validate data
-        if not all([name, email, address, phone]):
-            return jsonify({'error': 'Missing required information'}), 400
-
-        # Connect to database
-        conn = get_db_connection()
         cursor = conn.cursor()
 
         # Generate unique order ID
@@ -256,10 +270,12 @@ def checkout():
         # Get cart items for user
         cursor.execute('SELECT item_id, qty FROM Cart WHERE user_id = ?', (user_id,))
         cart = cursor.fetchall()
+        
+        print(cart)
 
         # Add order items to database
         for item in cart:
-            cursor.execute('INSERT INTO Order_Items (order_id, item_id, qty) VALUES (?, ?, ?)', (order_id, item[0], item[1]))
+            cursor.execute('INSERT INTO Order_Items (order_id, item_id, qty) VALUES (?, ?, ?)', (order_id, item['item_id'], item['qty']))
 
         # Calculate total price
         cursor.execute('SELECT c.item_id, i.name, i.price, c.qty FROM Cart c INNER JOIN Items i ON c.item_id = i.item_id WHERE user_id = ?', (user_id,))
@@ -311,7 +327,7 @@ def search():
         cursor.execute('SELECT * FROM Items WHERE name LIKE ?', ('%' + query + '%',))
         products = cursor.fetchall()
         close_db_connection(conn)
-        return jsonify({'products': [product for product in products]})
+        return jsonify({'products': products})
     except sqlite3.Error as e:
         close_db_connection(conn)
         return jsonify({'error': f'Failed to search for products: {e}'}), 500
@@ -330,7 +346,7 @@ def admin():
         cursor.execute('SELECT * FROM Items')
         products = cursor.fetchall()
         close_db_connection(conn)
-        return jsonify({'products': [product for product in products]})
+        return jsonify({'products': products})
     except sqlite3.Error as e:
         close_db_connection(conn)
         return jsonify({'error': f'Failed to retrieve products: {e}'}), 500
@@ -348,8 +364,8 @@ def add_product():
         return jsonify({'error': 'Missing required fields'}), 400
 
     # Add item to database
+    conn = get_db_connection()
     try:
-        conn = get_db_connection()
         cursor = conn.cursor()
         cursor.execute('INSERT INTO Items (name, price, description) VALUES (?, ?, ?)', (name, price, description))
         conn.commit()
@@ -378,7 +394,7 @@ def remove_product(item_id):
         close_db_connection(conn)
         return jsonify({'error': f'Failed to remove product: {e}'}), 500
 
-@app.route('/admin/modify/<int:item_id>', methods=['GET', 'POST'])
+@app.route('/admin/modify/<int:item_id>', methods=['POST'])
 @jwt_required()
 def edit_product(item_id):
     # Check if user is admin
@@ -386,34 +402,27 @@ def edit_product(item_id):
     if current_user != 'admin':
         return jsonify({'error': 'Unauthorized'}), 401
 
-    if request.method == 'POST':
-        # Get form data
-        name = request.json.get('name')
-        price = request.json.get('price')
-        description = request.json.get('description')
+    # Get form data
+    name = request.json.get('name')
+    price = request.json.get('price')
+    description = request.json.get('description')
 
-        # Validate inputs (optional, but recommended)
-        if not all([name, price, description]):
-            return jsonify({'error': 'Missing required fields'}), 400
+    # Validate inputs (optional, but recommended)
+    if not all([name, price, description]):
+        return jsonify({'error': 'Missing required fields'}), 400
 
-        # Update item in database
-        conn = get_db_connection()
+    # Update item in database
+    conn = get_db_connection()
+    try:
         cursor = conn.cursor()
         cursor.execute('UPDATE Items SET name = ?, price = ?, description = ? WHERE item_id = ?', (name, price, description, item_id))
         conn.commit()
         close_db_connection(conn)
 
         return jsonify({'message': 'Product updated successfully'})
-    else:
-        # Get specific item from database
-        conn = get_db_connection()
-        cursor = conn.cursor()
-        cursor.execute('SELECT * FROM Items WHERE item_id = ?', (item_id,))
-        product = cursor.fetchone()
+    except sqlite3.Error as e:
         close_db_connection(conn)
-
-        # Return product data as JSON
-        return jsonify({'product': product})
+        return jsonify({'error': f'Failed to update product: {e}'}), 500
 
 @app.route('/register', methods=['POST'])
 def register():

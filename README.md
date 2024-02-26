@@ -19,6 +19,14 @@ Contact me for the Stripe test key.
 export STRIPE_TEST_KEY=<YOUR_KEY_HERE>
 ```
 
+## API Documentation
+
+OpenAPI documentation can be view at `APISPEC.yaml`.
+
+Alternatively, you may view the interactive Swagger page at `/docs`.
+
+`test_api.ipynb` tests the API.
+
 ## Database Schema
 
 ```sql
